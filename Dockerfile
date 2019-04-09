@@ -1,4 +1,4 @@
-Stage 1 : builder debian image
+#Stage 1 : builder debian image
 FROM debian:stretch as builder
 
 # properly setup debian sources
