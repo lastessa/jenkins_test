@@ -1,16 +1,19 @@
-FROM node
+FROM metabrainz/base-image
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get clean
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends vsftpd \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /app
-WORKDIR /app
+RUN mkdir -p /var/run/vsftpd/empty \
+ && mkdir -p /etc/vsftpd \
+ && mkdir -p /var/ftp \
+ && mv /etc/vsftpd.conf /etc/vsftpd.orig \
+ && mkdir /etc/service/vsftpd
 
-COPY package.json /app/
-RUN npm install --only=production
+ADD vsftpd.sh /etc/service/vsftpd/run
 
-COPY src /app/src
+VOLUME ["/var/ftp"]
 
-EXPOSE 3000
-
-CMD [ "npm", "start" ]
+EXPOSE 20-21
+EXPOSE 65500-65515
